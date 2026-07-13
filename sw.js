@@ -1,5 +1,5 @@
 /* 简易离线缓存：添加到主屏幕后，无网也能打开�?*/
-const CACHE = "whack-a-mole-v8-transparent-mole";
+const CACHE = "whack-a-mole-v9-nobg";
 const ASSETS = [
   "./",
   "./index.html",
@@ -35,4 +35,5 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 

@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="打地鼠" />
+  <meta name="apple-mobile-web-app-title" content="打地�? />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="format-detection" content="telephone=no" />
-  <meta name="description" content="轻量打地鼠小游戏，可在 iPhone 主屏幕打开" />
+  <meta name="description" content="轻量打地鼠小游戏，可�?iPhone 主屏幕打开" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-180.png" />
   <link rel="icon" href="icon-180.png" />
-  <title>打地鼠</title>
+  <title>打地�?/title>
   <style>
     :root {
       --bg: #0f172a;
@@ -136,7 +136,7 @@
       margin-bottom: 16px;
     }
 
-    /* 洞：草地木框感，不挡角色脸 */
+    /* 洞：草地木框感，不挡角色�?*/
     .hole {
       position: relative;
       aspect-ratio: 1;
@@ -179,7 +179,7 @@
       pointer-events: none;
     }
 
-    /* 自定义图片地鼠 */
+    /* 自定义图片地�?*/
     .mole {
       position: absolute;
       left: 50%;
@@ -508,7 +508,7 @@
 </head>
 <body>
   <div class="game">
-    <h1>🐹 打地鼠</h1>
+    <h1>🐹 打地�?/h1>
     <p class="subtitle">点中冒出来的可爱地鼠得分 · 30 秒冲高分</p>
 
     <div class="hud">
@@ -525,7 +525,7 @@
         <span id="combo">0</span>
       </div>
       <div class="stat best">
-        <label>最高</label>
+        <label>最�?/label>
         <span id="bestScore">0</span>
       </div>
     </div>
@@ -533,7 +533,7 @@
     <div class="board" id="board" aria-label="游戏区域"></div>
 
     <div class="controls">
-      <button type="button" class="btn-start" id="startBtn">开始游戏</button>
+      <button type="button" class="btn-start" id="startBtn">开始游�?/button>
       <button type="button" class="btn-reset" id="resetBtn">重置</button>
     </div>
     <div class="controls controls-secondary">
@@ -542,13 +542,11 @@
 
     <div class="history-summary" id="historySummary">
       <span>共玩 <strong id="playCount">0</strong> 局</span>
-      <span>最近：<strong id="lastScore">—</strong></span>
+      <span>最近：<strong id="lastScore">�?/strong></span>
     </div>
 
     <div class="install-tip" id="installTip">
-      iPhone：用 Safari 打开本页 → 底部分享 →
-      <strong>「添加到主屏幕」</strong>，之后像 App 一样打开（电脑关机也能玩）。
-    </div>
+      iPhone：用 Safari 打开本页 �?底部分享 �?      <strong>「添加到主屏幕�?/strong>，之后像 App 一样打开（电脑关机也能玩）�?    </div>
   </div>
 
   <div class="overlay" id="overlay">
@@ -557,7 +555,7 @@
       <div class="new-record-badge" id="newRecordBadge">🎉 新纪录！</div>
       <p id="modalMsg">本局得分</p>
       <div class="final-score" id="finalScore">0</div>
-      <p id="modalHint">再试一次，刷新你的纪录！</p>
+      <p id="modalHint">再试一次，刷新你的纪录�?/p>
       <div class="controls" style="margin-top: 18px;">
         <button type="button" class="btn-start" id="againBtn">再来一局</button>
         <button type="button" class="btn-history" id="endHistoryBtn">历史</button>
@@ -568,7 +566,7 @@
   <div class="overlay" id="historyOverlay">
     <div class="modal history-modal" role="dialog" aria-labelledby="historyTitle">
       <h2 id="historyTitle">历史成绩</h2>
-      <p>按得分从高到低 · 最多保存 50 局</p>
+      <p>按得分从高到�?· 最多保�?50 局</p>
       <div class="history-list" id="historyList"></div>
       <div class="controls" style="margin-top: 14px;">
         <button type="button" class="btn-secondary" id="closeHistoryBtn">关闭</button>
@@ -625,8 +623,7 @@
       /** @type {{ score: number, date: number }[]} */
       let history = loadHistory();
 
-      // 主屏幕 App 模式时隐藏提示
-      if (window.navigator.standalone === true ||
+      // 主屏�?App 模式时隐藏提�?      if (window.navigator.standalone === true ||
           window.matchMedia("(display-mode: standalone)").matches) {
         installTip.style.display = "none";
       }
@@ -655,7 +652,7 @@
           mole.setAttribute("role", "button");
           mole.setAttribute("aria-label", "地鼠");
           mole.innerHTML =
-            '<img class="mole-img" src="mole.png" alt="地鼠" draggable="false" />';
+            '<img class="mole-img" src="mole.png?v=9" alt="地鼠" draggable="false" />';
 
           const fx = document.createElement("div");
           fx.className = "hit-fx";
@@ -675,8 +672,7 @@
           };
           holes.push(state);
 
-          // pointer 事件同时兼容手指和鼠标
-          mole.addEventListener("pointerdown", function (e) {
+          // pointer 事件同时兼容手指和鼠�?          mole.addEventListener("pointerdown", function (e) {
             e.preventDefault();
             hitMole(state);
           });
@@ -781,12 +777,12 @@
         const last = getLastScore();
         bestScoreEl.textContent = String(best);
         playCountEl.textContent = String(history.length);
-        lastScoreEl.textContent = last === null ? "—" : String(last) + " 分";
+        lastScoreEl.textContent = last === null ? "�? : String(last) + " �?;
       }
 
       function renderHistoryList() {
         if (history.length === 0) {
-          historyList.innerHTML = '<div class="history-empty">还没有成绩记录<br>打完一局就会出现在这里</div>';
+          historyList.innerHTML = '<div class="history-empty">还没有成绩记�?br>打完一局就会出现在这�?/div>';
           return;
         }
 
@@ -804,7 +800,7 @@
             '<div class="history-item' + rankClass + '">' +
             '  <div class="rank">' + rankLabel + "</div>" +
             '  <div class="meta">' + formatDate(item.date) + "</div>" +
-            '  <div class="pts">' + item.score + " 分</div>" +
+            '  <div class="pts">' + item.score + " �?/div>" +
             "</div>";
         }
         historyList.innerHTML = html;
@@ -821,7 +817,7 @@
 
       function clearHistory() {
         if (history.length === 0) return;
-        if (!window.confirm("确定清空全部历史成绩？此操作不可恢复。")) return;
+        if (!window.confirm("确定清空全部历史成绩？此操作不可恢复�?)) return;
         history = [];
         saveHistory();
         refreshHistorySummary();
@@ -931,7 +927,7 @@
         stopLoops();
         clearHoleTimers();
         startBtn.disabled = false;
-        startBtn.textContent = "开始游戏";
+        startBtn.textContent = "开始游�?;
 
         const isNewRecord = addHistoryRecord(score);
         finalScore.textContent = String(score);
@@ -940,19 +936,19 @@
         if (isNewRecord) {
           modalTitle.textContent = "新纪录！";
           modalMsg.textContent = "恭喜刷新最高分，本局得分";
-          modalHint.textContent = "当前最高分 " + getBestScore() + " · 已写入历史成绩";
+          modalHint.textContent = "当前最高分 " + getBestScore() + " · 已写入历史成�?;
         } else if (score >= 40) {
-          modalTitle.textContent = "太厉害了！";
+          modalTitle.textContent = "太厉害了�?;
           modalMsg.textContent = "地鼠都怕了你，本局得分";
-          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保�?;
         } else if (score >= 20) {
           modalTitle.textContent = "不错哦！";
           modalMsg.textContent = "手速不错，本局得分";
-          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保�?;
         } else {
           modalTitle.textContent = "游戏结束";
           modalMsg.textContent = "本局得分";
-          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保�?;
         }
         overlay.classList.add("show");
       }
@@ -970,7 +966,7 @@
         updateHud();
 
         startBtn.disabled = true;
-        startBtn.textContent = "进行中…";
+        startBtn.textContent = "进行中�?;
 
         timerId = setInterval(function () {
           timeLeft -= 1;
@@ -991,7 +987,7 @@
         lastHole = -1;
         updateHud();
         startBtn.disabled = false;
-        startBtn.textContent = "开始游戏";
+        startBtn.textContent = "开始游�?;
         overlay.classList.remove("show");
       }
 
@@ -1014,7 +1010,7 @@
       });
 
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js").catch(function () { /* 本地 file:// 可忽略 */ });
+        navigator.serviceWorker.register("./sw.js").catch(function () { /* 本地 file:// 可忽�?*/ });
       }
 
       createBoard();
