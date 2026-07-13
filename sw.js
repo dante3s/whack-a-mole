@@ -1,5 +1,5 @@
 /* 简易离线缓存：添加到主屏幕后，无网也能打开玩 */
-const CACHE = "whack-a-mole-v5-ac-cartoon";
+const CACHE = "whack-a-mole-v6-face-fix";
 const ASSETS = [
   "./",
   "./index.html",
