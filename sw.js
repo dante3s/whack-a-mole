@@ -1,5 +1,5 @@
 /* offline cache for whack-a-mole */
-const CACHE = "whack-a-mole-v10-fixed";
+const CACHE = "whack-a-mole-v11-new-mole";
 const ASSETS = [
   "./",
   "./index.html",
