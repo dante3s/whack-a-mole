@@ -139,110 +139,267 @@
     .hole {
       position: relative;
       aspect-ratio: 1;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      background:
+        radial-gradient(ellipse 70% 40% at 50% 72%, rgba(0, 0, 0, 0.55) 0%, transparent 70%),
+        linear-gradient(180deg, #3f2a1a 0%, #1c120a 55%, #0c0805 100%);
       border-radius: 50%;
       overflow: hidden;
-      border: 4px solid var(--dirt);
+      border: 4px solid #6b3f1a;
       box-shadow:
-        inset 0 12px 20px rgba(0, 0, 0, 0.45),
-        0 4px 0 #5c2a0a;
+        inset 0 14px 22px rgba(0, 0, 0, 0.5),
+        0 4px 0 #3b2110;
       cursor: pointer;
+      perspective: 420px;
+    }
+
+    /* 洞口泥土边缘 */
+    .hole::before {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 14%;
+      height: 22%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, #2a1608 0%, #1a0e06 55%, transparent 72%);
+      z-index: 3;
+      pointer-events: none;
+      box-shadow: inset 0 6px 10px rgba(0, 0, 0, 0.45);
     }
 
     .hole::after {
       content: "";
       position: absolute;
-      left: 10%;
-      right: 10%;
-      bottom: 8%;
-      height: 28%;
-      background: radial-gradient(ellipse at center, #5c2a0a 0%, transparent 70%);
-      z-index: 2;
+      left: 12%;
+      right: 12%;
+      bottom: 6%;
+      height: 18%;
+      background: radial-gradient(ellipse at center, rgba(92, 42, 10, 0.55) 0%, transparent 72%);
+      z-index: 4;
       pointer-events: none;
     }
 
+    /* 3D 地鼠宝风格圆柱体 */
     .mole {
       position: absolute;
       left: 50%;
-      bottom: -5%;
-      width: 68%;
-      height: 72%;
-      transform: translateX(-50%) translateY(110%);
-      transition: transform 0.18s ease-out;
-      z-index: 1;
+      bottom: 8%;
+      width: 58%;
+      height: 78%;
+      transform: translateX(-50%) translateY(115%) rotateX(8deg);
+      transform-style: preserve-3d;
+      transition: transform 0.2s cubic-bezier(0.2, 1.2, 0.4, 1);
+      z-index: 2;
+      transform-origin: 50% 100%;
     }
 
     .mole.up {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%) translateY(0) rotateX(6deg);
+      animation: diglett-bob 0.9s ease-in-out infinite;
     }
 
     .mole.hit {
-      filter: brightness(1.4) saturate(0.5);
-      transform: translateX(-50%) translateY(0) scale(0.9);
+      animation: none;
+      filter: brightness(1.35) saturate(0.7);
+      transform: translateX(-50%) translateY(8%) rotateX(18deg) scale(0.92, 0.78);
+      transition: transform 0.12s ease-out, filter 0.12s ease;
     }
 
-    .mole-body {
+    @keyframes diglett-bob {
+      0%, 100% { transform: translateX(-50%) translateY(0) rotateX(6deg); }
+      50% { transform: translateX(-50%) translateY(-3%) rotateX(4deg); }
+    }
+
+    .diglett {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 35%, #a16207 0%, #78350f 55%, #451a03 100%);
-      border-radius: 50% 50% 45% 45%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
     }
 
-    .mole-face {
+    /* 圆柱身：竖向高光模拟立体 */
+    .diglett-body {
       position: absolute;
-      top: 28%;
-      left: 50%;
-      width: 70%;
-      height: 45%;
-      transform: translateX(-50%);
+      left: 8%;
+      right: 8%;
+      top: 18%;
+      bottom: 0;
+      border-radius: 48% 48% 42% 42% / 18% 18% 10% 10%;
+      background:
+        linear-gradient(
+          90deg,
+          #5a3010 0%,
+          #8b4e1a 14%,
+          #c47a2e 32%,
+          #e0a04a 48%,
+          #c47a2e 62%,
+          #8b4e1a 82%,
+          #4a280c 100%
+        );
+      box-shadow:
+        inset 0 8px 14px rgba(255, 220, 150, 0.18),
+        inset 0 -16px 22px rgba(40, 18, 4, 0.45),
+        0 8px 14px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
     }
 
-    .eye {
-      position: absolute;
-      top: 0;
-      width: 14px;
-      height: 14px;
-      background: #0f172a;
-      border-radius: 50%;
-    }
-
-    .eye.left { left: 12%; }
-    .eye.right { right: 12%; }
-
-    .eye::after {
+    /* 身侧纹理（浅浅竖纹） */
+    .diglett-body::before {
       content: "";
       position: absolute;
-      top: 2px;
-      right: 2px;
-      width: 5px;
-      height: 5px;
-      background: #fff;
-      border-radius: 50%;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0,
+        transparent 10%,
+        rgba(90, 48, 12, 0.12) 10%,
+        rgba(90, 48, 12, 0.12) 12%
+      );
+      opacity: 0.55;
+      pointer-events: none;
     }
 
-    .nose {
+    /* 顶部圆顶 */
+    .diglett-head {
       position: absolute;
-      top: 40%;
-      left: 50%;
-      width: 16px;
-      height: 12px;
-      background: #fca5a5;
-      border-radius: 50%;
-      transform: translateX(-50%);
+      left: 6%;
+      right: 6%;
+      top: 0;
+      height: 42%;
+      border-radius: 50% 50% 46% 46%;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 38%, #f0c27a 0%, #d4923a 28%, #a8621f 62%, #6b3a10 100%);
+      box-shadow:
+        inset 0 -10px 16px rgba(80, 35, 5, 0.35),
+        inset 0 8px 12px rgba(255, 235, 190, 0.35),
+        0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 2;
     }
 
-    .mouth {
+    /* 头顶高光 */
+    .diglett-head::before {
+      content: "";
       position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 22px;
-      height: 10px;
-      border: 2px solid #451a03;
-      border-top: none;
-      border-radius: 0 0 12px 12px;
-      transform: translateX(-50%);
+      left: 22%;
+      top: 12%;
+      width: 38%;
+      height: 28%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 248, 230, 0.65) 0%, transparent 70%);
+      pointer-events: none;
     }
+
+    /* 脸部区域 */
+    .diglett-face {
+      position: absolute;
+      left: 50%;
+      top: 28%;
+      width: 78%;
+      height: 52%;
+      transform: translateX(-50%);
+      z-index: 3;
+    }
+
+    .diglett-eye {
+      position: absolute;
+      top: 8%;
+      width: 18%;
+      height: 28%;
+      background: #1a1208;
+      border-radius: 50%;
+      box-shadow:
+        inset 0 -2px 0 rgba(255, 255, 255, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    .diglett-eye.left { left: 18%; }
+    .diglett-eye.right { right: 18%; }
+
+    .diglett-eye::after {
+      content: "";
+      position: absolute;
+      top: 18%;
+      left: 22%;
+      width: 38%;
+      height: 34%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    /* 标志性大鼻子 */
+    .diglett-nose {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 46%;
+      height: 48%;
+      transform: translateX(-50%);
+      border-radius: 48% 48% 50% 50%;
+      background:
+        radial-gradient(ellipse 70% 60% at 42% 35%, #ffe8d6 0%, #f5c9a8 35%, #e8a888 70%, #c47a62 100%);
+      box-shadow:
+        inset 0 3px 6px rgba(255, 255, 255, 0.35),
+        inset 0 -4px 8px rgba(120, 50, 30, 0.25),
+        0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .diglett-nose::before {
+      content: "";
+      position: absolute;
+      left: 22%;
+      top: 22%;
+      width: 28%;
+      height: 22%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+
+    /* 鼻下一点阴影增加立体 */
+    .diglett-chin {
+      position: absolute;
+      left: 50%;
+      bottom: -2%;
+      width: 40%;
+      height: 14%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(70, 30, 8, 0.35) 0%, transparent 70%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 出土时泥土颗粒 */
+    .diglett-dirt {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -2%;
+      height: 18%;
+      z-index: 4;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .mole.up .diglett-dirt {
+      opacity: 1;
+    }
+
+    .diglett-dirt span {
+      position: absolute;
+      bottom: 20%;
+      width: 10%;
+      height: 35%;
+      border-radius: 40%;
+      background: #6b4220;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .diglett-dirt span:nth-child(1) { left: 12%; transform: rotate(-20deg); background: #8a5a2b; }
+    .diglett-dirt span:nth-child(2) { left: 28%; height: 45%; background: #5c3614; }
+    .diglett-dirt span:nth-child(3) { left: 48%; transform: rotate(10deg); }
+    .diglett-dirt span:nth-child(4) { left: 64%; height: 40%; background: #7a4a20; transform: rotate(-8deg); }
+    .diglett-dirt span:nth-child(5) { left: 80%; transform: rotate(15deg); background: #4a2a10; }
 
     .controls {
       display: flex;
@@ -531,7 +688,7 @@
 <body>
   <div class="game">
     <h1>🐹 打地鼠</h1>
-    <p class="subtitle">点冒出的地鼠得分 · 30 秒冲高分</p>
+    <p class="subtitle">立体地鼠从洞里冒出来 · 点中得分 · 30 秒冲高分</p>
 
     <div class="hud">
       <div class="stat">
@@ -675,14 +832,21 @@
           const mole = document.createElement("div");
           mole.className = "mole";
           mole.setAttribute("role", "button");
-          mole.setAttribute("aria-label", "地鼠");
+          mole.setAttribute("aria-label", "立体地鼠");
           mole.innerHTML =
-            '<div class="mole-body"></div>' +
-            '<div class="mole-face">' +
-            '  <div class="eye left"></div>' +
-            '  <div class="eye right"></div>' +
-            '  <div class="nose"></div>' +
-            '  <div class="mouth"></div>' +
+            '<div class="diglett">' +
+            '  <div class="diglett-body"></div>' +
+            '  <div class="diglett-head">' +
+            '    <div class="diglett-face">' +
+            '      <div class="diglett-eye left"></div>' +
+            '      <div class="diglett-eye right"></div>' +
+            '      <div class="diglett-nose"></div>' +
+            "    </div>" +
+            "  </div>" +
+            '  <div class="diglett-chin"></div>' +
+            '  <div class="diglett-dirt">' +
+            "    <span></span><span></span><span></span><span></span><span></span>" +
+            "  </div>" +
             "</div>";
 
           const fx = document.createElement("div");
