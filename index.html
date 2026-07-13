@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="打地鼠" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="轻量打地鼠小游戏，可在 iPhone 主屏幕打开" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <link rel="icon" href="icon-180.png" />
+  <title>打地鼠</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --accent: #22c55e;
+      --accent-dark: #16a34a;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --dirt: #78350f;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(ellipse at top, #1e3a5f 0%, transparent 50%),
+        radial-gradient(ellipse at bottom, #14532d 0%, transparent 45%),
+        var(--bg);
+      color: var(--text);
+      padding:
+        max(12px, var(--safe-top))
+        max(12px, var(--safe-right))
+        max(12px, var(--safe-bottom))
+        max(12px, var(--safe-left));
+    }
+
+    .game {
+      width: min(480px, 100%);
+      max-height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      background: rgba(30, 41, 59, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 24px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(1.35rem, 5vw, 1.75rem);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 14px;
+      padding: 10px 6px;
+      text-align: center;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .stat.best {
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .stat.best span {
+      color: #facc15;
+    }
+
+    .stat label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      font-size: clamp(1.05rem, 4vw, 1.35rem);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 2.5vw, 14px);
+      margin-bottom: 16px;
+    }
+
+    .hole {
+      position: relative;
+      aspect-ratio: 1;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--dirt);
+      box-shadow:
+        inset 0 12px 20px rgba(0, 0, 0, 0.45),
+        0 4px 0 #5c2a0a;
+      cursor: pointer;
+    }
+
+    .hole::after {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 8%;
+      height: 28%;
+      background: radial-gradient(ellipse at center, #5c2a0a 0%, transparent 70%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .mole {
+      position: absolute;
+      left: 50%;
+      bottom: -5%;
+      width: 68%;
+      height: 72%;
+      transform: translateX(-50%) translateY(110%);
+      transition: transform 0.18s ease-out;
+      z-index: 1;
+    }
+
+    .mole.up {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .mole.hit {
+      filter: brightness(1.4) saturate(0.5);
+      transform: translateX(-50%) translateY(0) scale(0.9);
+    }
+
+    .mole-body {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 35%, #a16207 0%, #78350f 55%, #451a03 100%);
+      border-radius: 50% 50% 45% 45%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .mole-face {
+      position: absolute;
+      top: 28%;
+      left: 50%;
+      width: 70%;
+      height: 45%;
+      transform: translateX(-50%);
+    }
+
+    .eye {
+      position: absolute;
+      top: 0;
+      width: 14px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 50%;
+    }
+
+    .eye.left { left: 12%; }
+    .eye.right { right: 12%; }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 5px;
+      height: 5px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .nose {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      width: 16px;
+      height: 12px;
+      background: #fca5a5;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    .mouth {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 22px;
+      height: 10px;
+      border: 2px solid #451a03;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      transform: translateX(-50%);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 12px;
+      min-height: 48px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+      filter: brightness(0.95);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-start {
+      background: linear-gradient(180deg, #4ade80, var(--accent-dark));
+      color: #052e16;
+      box-shadow: 0 4px 0 #14532d;
+    }
+
+    .btn-reset {
+      background: linear-gradient(180deg, #64748b, #475569);
+      color: var(--text);
+      box-shadow: 0 4px 0 #1e293b;
+    }
+
+    .btn-history {
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      color: #0c4a6e;
+      box-shadow: 0 4px 0 #075985;
+    }
+
+    .btn-danger {
+      background: linear-gradient(180deg, #f87171, #dc2626);
+      color: #450a0a;
+      box-shadow: 0 4px 0 #7f1d1d;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(180deg, #64748b, #475569);
+      color: var(--text);
+      box-shadow: 0 4px 0 #1e293b;
+    }
+
+    .controls-secondary {
+      margin-top: 10px;
+    }
+
+    .history-summary {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .history-summary strong {
+      color: #facc15;
+      font-weight: 700;
+    }
+
+    .history-list {
+      margin: 14px 0 6px;
+      max-height: min(42vh, 280px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      text-align: left;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      font-size: 0.88rem;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-item.rank-1 .rank {
+      color: #facc15;
+    }
+
+    .history-item.rank-2 .rank {
+      color: #cbd5e1;
+    }
+
+    .history-item.rank-3 .rank {
+      color: #fdba74;
+    }
+
+    .history-item .rank {
+      font-weight: 800;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .history-item .meta {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .history-item .pts {
+      font-weight: 800;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.05rem;
+    }
+
+    .history-empty {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .new-record-badge {
+      display: none;
+      margin: 0 auto 10px;
+      width: fit-content;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(250, 204, 21, 0.18);
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      color: #facc15;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .new-record-badge.show {
+      display: inline-block;
+    }
+
+    .modal.history-modal {
+      width: min(400px, 100%);
+      max-height: min(88vh, 640px);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      text-align: center;
+    }
+
+    .modal.history-modal h2 {
+      margin-bottom: 4px;
+    }
+
+    .install-tip {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+      color: #bbf7d0;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .install-tip strong {
+      color: #86efac;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding:
+        max(20px, var(--safe-top))
+        max(20px, var(--safe-right))
+        max(20px, var(--safe-bottom))
+        max(20px, var(--safe-left));
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 20px;
+      padding: 28px 22px;
+      width: min(360px, 100%);
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal h2 {
+      font-size: 1.45rem;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .modal .final-score {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 12px 0 20px;
+    }
+
+    .hit-fx {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #facc15;
+      font-weight: 800;
+      font-size: 1.05rem;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+    }
+
+    .hit-fx.show {
+      animation: floatUp 0.55s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+    }
+
+    .score-pop {
+      animation: scorePulse 0.25s ease;
+    }
+
+    @keyframes scorePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); color: #facc15; }
+      100% { transform: scale(1); }
+    }
+
+    /* 横屏矮屏适配 */
+    @media (max-height: 560px) {
+      .subtitle, .install-tip, .history-summary { display: none; }
+      .game { padding: 12px; border-radius: 16px; }
+      .hud { margin-bottom: 10px; }
+      .board { margin-bottom: 10px; gap: 8px; }
+      h1 { font-size: 1.15rem; margin-bottom: 4px; }
+      .stat { padding: 6px 4px; }
+    }
+
+    @media (max-width: 380px) {
+      .hud { gap: 6px; }
+      .stat label { font-size: 0.65rem; }
+      .stat span { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h1>🐹 打地鼠</h1>
+    <p class="subtitle">点冒出的地鼠得分 · 30 秒冲高分</p>
+
+    <div class="hud">
+      <div class="stat">
+        <label>得分</label>
+        <span id="score">0</span>
+      </div>
+      <div class="stat">
+        <label>时间</label>
+        <span id="time">30</span>
+      </div>
+      <div class="stat">
+        <label>连击</label>
+        <span id="combo">0</span>
+      </div>
+      <div class="stat best">
+        <label>最高</label>
+        <span id="bestScore">0</span>
+      </div>
+    </div>
+
+    <div class="board" id="board" aria-label="游戏区域"></div>
+
+    <div class="controls">
+      <button type="button" class="btn-start" id="startBtn">开始游戏</button>
+      <button type="button" class="btn-reset" id="resetBtn">重置</button>
+    </div>
+    <div class="controls controls-secondary">
+      <button type="button" class="btn-history" id="historyBtn">历史成绩</button>
+    </div>
+
+    <div class="history-summary" id="historySummary">
+      <span>共玩 <strong id="playCount">0</strong> 局</span>
+      <span>最近：<strong id="lastScore">—</strong></span>
+    </div>
+
+    <div class="install-tip" id="installTip">
+      iPhone：用 Safari 打开本页 → 底部分享 →
+      <strong>「添加到主屏幕」</strong>，之后像 App 一样打开（电脑关机也能玩）。
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h2 id="modalTitle">游戏结束</h2>
+      <div class="new-record-badge" id="newRecordBadge">🎉 新纪录！</div>
+      <p id="modalMsg">本局得分</p>
+      <div class="final-score" id="finalScore">0</div>
+      <p id="modalHint">再试一次，刷新你的纪录！</p>
+      <div class="controls" style="margin-top: 18px;">
+        <button type="button" class="btn-start" id="againBtn">再来一局</button>
+        <button type="button" class="btn-history" id="endHistoryBtn">历史</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="historyOverlay">
+    <div class="modal history-modal" role="dialog" aria-labelledby="historyTitle">
+      <h2 id="historyTitle">历史成绩</h2>
+      <p>按得分从高到低 · 最多保存 50 局</p>
+      <div class="history-list" id="historyList"></div>
+      <div class="controls" style="margin-top: 14px;">
+        <button type="button" class="btn-secondary" id="closeHistoryBtn">关闭</button>
+        <button type="button" class="btn-danger" id="clearHistoryBtn">清空记录</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const HOLE_COUNT = 9;
+      const GAME_SECONDS = 30;
+      const MIN_UP_MS = 650;
+      const MAX_UP_MS = 1100;
+      const MIN_GAP_MS = 350;
+      const MAX_GAP_MS = 800;
+      const STORAGE_KEY = "whack-a-mole-history-v1";
+      const MAX_HISTORY = 50;
+
+      const board = document.getElementById("board");
+      const scoreEl = document.getElementById("score");
+      const timeEl = document.getElementById("time");
+      const comboEl = document.getElementById("combo");
+      const bestScoreEl = document.getElementById("bestScore");
+      const playCountEl = document.getElementById("playCount");
+      const lastScoreEl = document.getElementById("lastScore");
+      const startBtn = document.getElementById("startBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const historyBtn = document.getElementById("historyBtn");
+      const overlay = document.getElementById("overlay");
+      const historyOverlay = document.getElementById("historyOverlay");
+      const historyList = document.getElementById("historyList");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalMsg = document.getElementById("modalMsg");
+      const finalScore = document.getElementById("finalScore");
+      const modalHint = document.getElementById("modalHint");
+      const newRecordBadge = document.getElementById("newRecordBadge");
+      const againBtn = document.getElementById("againBtn");
+      const endHistoryBtn = document.getElementById("endHistoryBtn");
+      const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+      const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+      const installTip = document.getElementById("installTip");
+
+      const holes = [];
+      let score = 0;
+      let combo = 0;
+      let timeLeft = GAME_SECONDS;
+      let playing = false;
+      let timerId = null;
+      let spawnId = null;
+      let lastHole = -1;
+      /** @type {{ score: number, date: number }[]} */
+      let history = loadHistory();
+
+      // 主屏幕 App 模式时隐藏提示
+      if (window.navigator.standalone === true ||
+          window.matchMedia("(display-mode: standalone)").matches) {
+        installTip.style.display = "none";
+      }
+
+      // 阻止 iOS 双指缩放 / 双击放大干扰游戏
+      document.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
+      document.addEventListener("dblclick", function (e) { e.preventDefault(); }, { passive: false });
+      let lastTouchEnd = 0;
+      document.addEventListener("touchend", function (e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) e.preventDefault();
+        lastTouchEnd = now;
+      }, { passive: false });
+
+      function createBoard() {
+        board.innerHTML = "";
+        holes.length = 0;
+
+        for (let i = 0; i < HOLE_COUNT; i++) {
+          const hole = document.createElement("div");
+          hole.className = "hole";
+          hole.dataset.index = String(i);
+
+          const mole = document.createElement("div");
+          mole.className = "mole";
+          mole.setAttribute("role", "button");
+          mole.setAttribute("aria-label", "地鼠");
+          mole.innerHTML =
+            '<div class="mole-body"></div>' +
+            '<div class="mole-face">' +
+            '  <div class="eye left"></div>' +
+            '  <div class="eye right"></div>' +
+            '  <div class="nose"></div>' +
+            '  <div class="mouth"></div>' +
+            "</div>";
+
+          const fx = document.createElement("div");
+          fx.className = "hit-fx";
+          fx.textContent = "+1";
+
+          hole.appendChild(mole);
+          hole.appendChild(fx);
+          board.appendChild(hole);
+
+          const state = {
+            hole: hole,
+            mole: mole,
+            fx: fx,
+            up: false,
+            hit: false,
+            hideTimer: null,
+          };
+          holes.push(state);
+
+          // pointer 事件同时兼容手指和鼠标
+          mole.addEventListener("pointerdown", function (e) {
+            e.preventDefault();
+            hitMole(state);
+          });
+        }
+      }
+
+      function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function clearHoleTimers() {
+        for (let i = 0; i < holes.length; i++) {
+          const h = holes[i];
+          if (h.hideTimer !== null) {
+            clearTimeout(h.hideTimer);
+            h.hideTimer = null;
+          }
+          h.mole.classList.remove("up", "hit");
+          h.up = false;
+          h.hit = false;
+        }
+      }
+
+      function stopLoops() {
+        if (timerId !== null) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        if (spawnId !== null) {
+          clearTimeout(spawnId);
+          spawnId = null;
+        }
+      }
+
+      function loadHistory() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const data = JSON.parse(raw);
+          if (!Array.isArray(data)) return [];
+          return data
+            .filter(function (item) {
+              return item && typeof item.score === "number" && typeof item.date === "number";
+            })
+            .map(function (item) {
+              return { score: Math.max(0, Math.floor(item.score)), date: item.date };
+            })
+            .slice(0, MAX_HISTORY);
+        } catch (err) {
+          return [];
+        }
+      }
+
+      function saveHistory() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        } catch (err) {
+          /* 隐私模式 / 存储满时忽略 */
+        }
+      }
+
+      function getBestScore() {
+        let best = 0;
+        for (let i = 0; i < history.length; i++) {
+          if (history[i].score > best) best = history[i].score;
+        }
+        return best;
+      }
+
+      function getLastScore() {
+        if (history.length === 0) return null;
+        let latest = history[0];
+        for (let i = 1; i < history.length; i++) {
+          if (history[i].date > latest.date) latest = history[i];
+        }
+        return latest.score;
+      }
+
+      function formatDate(ts) {
+        const d = new Date(ts);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        return y + "-" + m + "-" + day + " " + hh + ":" + mm;
+      }
+
+      function addHistoryRecord(finalPts) {
+        const prevBest = getBestScore();
+        history.unshift({ score: finalPts, date: Date.now() });
+        if (history.length > MAX_HISTORY) {
+          history = history.slice(0, MAX_HISTORY);
+        }
+        saveHistory();
+        refreshHistorySummary();
+        return finalPts > prevBest;
+      }
+
+      function refreshHistorySummary() {
+        const best = getBestScore();
+        const last = getLastScore();
+        bestScoreEl.textContent = String(best);
+        playCountEl.textContent = String(history.length);
+        lastScoreEl.textContent = last === null ? "—" : String(last) + " 分";
+      }
+
+      function renderHistoryList() {
+        if (history.length === 0) {
+          historyList.innerHTML = '<div class="history-empty">还没有成绩记录<br>打完一局就会出现在这里</div>';
+          return;
+        }
+
+        const sorted = history.slice().sort(function (a, b) {
+          if (b.score !== a.score) return b.score - a.score;
+          return b.date - a.date;
+        });
+
+        let html = "";
+        for (let i = 0; i < sorted.length; i++) {
+          const item = sorted[i];
+          const rankClass = i < 3 ? " rank-" + (i + 1) : "";
+          const rankLabel = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : String(i + 1);
+          html +=
+            '<div class="history-item' + rankClass + '">' +
+            '  <div class="rank">' + rankLabel + "</div>" +
+            '  <div class="meta">' + formatDate(item.date) + "</div>" +
+            '  <div class="pts">' + item.score + " 分</div>" +
+            "</div>";
+        }
+        historyList.innerHTML = html;
+      }
+
+      function openHistory() {
+        renderHistoryList();
+        historyOverlay.classList.add("show");
+      }
+
+      function closeHistory() {
+        historyOverlay.classList.remove("show");
+      }
+
+      function clearHistory() {
+        if (history.length === 0) return;
+        if (!window.confirm("确定清空全部历史成绩？此操作不可恢复。")) return;
+        history = [];
+        saveHistory();
+        refreshHistorySummary();
+        renderHistoryList();
+      }
+
+      function updateHud() {
+        scoreEl.textContent = String(score);
+        timeEl.textContent = String(timeLeft);
+        comboEl.textContent = String(combo);
+      }
+
+      function popScore() {
+        scoreEl.classList.remove("score-pop");
+        void scoreEl.offsetWidth;
+        scoreEl.classList.add("score-pop");
+      }
+
+      function hitMole(state) {
+        if (!playing || !state.up || state.hit) return;
+
+        state.hit = true;
+        state.up = false;
+        state.mole.classList.add("hit");
+        state.mole.classList.remove("up");
+
+        if (state.hideTimer !== null) {
+          clearTimeout(state.hideTimer);
+          state.hideTimer = null;
+        }
+
+        // 轻微震动反馈（支持的 iPhone 会震一下）
+        if (navigator.vibrate) {
+          try { navigator.vibrate(15); } catch (err) { /* ignore */ }
+        }
+
+        combo += 1;
+        const bonus = combo >= 5 ? 2 : 1;
+        score += bonus;
+        state.fx.textContent = bonus > 1 ? "+" + bonus + " 连击!" : "+1";
+        state.fx.classList.remove("show");
+        void state.fx.offsetWidth;
+        state.fx.classList.add("show");
+
+        updateHud();
+        popScore();
+
+        setTimeout(function () {
+          state.mole.classList.remove("hit");
+          state.hit = false;
+        }, 180);
+      }
+
+      function showMole() {
+        if (!playing) return;
+
+        const available = [];
+        for (let i = 0; i < holes.length; i++) {
+          if (!holes[i].up && i !== lastHole) available.push(i);
+        }
+        if (available.length === 0) {
+          for (let i = 0; i < holes.length; i++) {
+            if (!holes[i].up) available.push(i);
+          }
+        }
+        if (available.length === 0) {
+          scheduleNextSpawn();
+          return;
+        }
+
+        const idx = available[rand(0, available.length - 1)];
+        lastHole = idx;
+        const state = holes[idx];
+        state.up = true;
+        state.hit = false;
+        state.mole.classList.remove("hit");
+        state.mole.classList.add("up");
+
+        const progress = 1 - timeLeft / GAME_SECONDS;
+        const upMin = Math.max(380, MIN_UP_MS - Math.floor(progress * 280));
+        const upMax = Math.max(520, MAX_UP_MS - Math.floor(progress * 350));
+        const upMs = rand(upMin, upMax);
+
+        state.hideTimer = setTimeout(function () {
+          if (state.up && !state.hit) {
+            state.up = false;
+            state.mole.classList.remove("up");
+            combo = 0;
+            updateHud();
+          }
+          state.hideTimer = null;
+        }, upMs);
+
+        scheduleNextSpawn();
+      }
+
+      function scheduleNextSpawn() {
+        if (!playing) return;
+        const progress = 1 - timeLeft / GAME_SECONDS;
+        const gapMin = Math.max(180, MIN_GAP_MS - Math.floor(progress * 200));
+        const gapMax = Math.max(320, MAX_GAP_MS - Math.floor(progress * 320));
+        spawnId = setTimeout(showMole, rand(gapMin, gapMax));
+      }
+
+      function endGame() {
+        playing = false;
+        stopLoops();
+        clearHoleTimers();
+        startBtn.disabled = false;
+        startBtn.textContent = "开始游戏";
+
+        const isNewRecord = addHistoryRecord(score);
+        finalScore.textContent = String(score);
+        newRecordBadge.classList.toggle("show", isNewRecord);
+
+        if (isNewRecord) {
+          modalTitle.textContent = "新纪录！";
+          modalMsg.textContent = "恭喜刷新最高分，本局得分";
+          modalHint.textContent = "当前最高分 " + getBestScore() + " · 已写入历史成绩";
+        } else if (score >= 40) {
+          modalTitle.textContent = "太厉害了！";
+          modalMsg.textContent = "地鼠都怕了你，本局得分";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+        } else if (score >= 20) {
+          modalTitle.textContent = "不错哦！";
+          modalMsg.textContent = "手速不错，本局得分";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+        } else {
+          modalTitle.textContent = "游戏结束";
+          modalMsg.textContent = "本局得分";
+          modalHint.textContent = "最高分 " + getBestScore() + " · 成绩已保存";
+        }
+        overlay.classList.add("show");
+      }
+
+      function startGame() {
+        stopLoops();
+        clearHoleTimers();
+        overlay.classList.remove("show");
+
+        score = 0;
+        combo = 0;
+        timeLeft = GAME_SECONDS;
+        playing = true;
+        lastHole = -1;
+        updateHud();
+
+        startBtn.disabled = true;
+        startBtn.textContent = "进行中…";
+
+        timerId = setInterval(function () {
+          timeLeft -= 1;
+          updateHud();
+          if (timeLeft <= 0) endGame();
+        }, 1000);
+
+        scheduleNextSpawn();
+      }
+
+      function resetGame() {
+        stopLoops();
+        clearHoleTimers();
+        playing = false;
+        score = 0;
+        combo = 0;
+        timeLeft = GAME_SECONDS;
+        lastHole = -1;
+        updateHud();
+        startBtn.disabled = false;
+        startBtn.textContent = "开始游戏";
+        overlay.classList.remove("show");
+      }
+
+      startBtn.addEventListener("click", startGame);
+      resetBtn.addEventListener("click", resetGame);
+      againBtn.addEventListener("click", startGame);
+      historyBtn.addEventListener("click", openHistory);
+      endHistoryBtn.addEventListener("click", function () {
+        overlay.classList.remove("show");
+        openHistory();
+      });
+      closeHistoryBtn.addEventListener("click", closeHistory);
+      clearHistoryBtn.addEventListener("click", clearHistory);
+
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) overlay.classList.remove("show");
+      });
+      historyOverlay.addEventListener("click", function (e) {
+        if (e.target === historyOverlay) closeHistory();
+      });
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(function () { /* 本地 file:// 可忽略 */ });
+      }
+
+      createBoard();
+      updateHud();
+      refreshHistorySummary();
+    })();
+  </script>
+</body>
+</html>
