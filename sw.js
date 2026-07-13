@@ -1,12 +1,13 @@
 /* offline cache for whack-a-mole */
-const CACHE = "whack-a-mole-v11-new-mole";
+const CACHE = "whack-a-mole-v12-golden";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-512.png",
-  "./mole.png"
+  "./mole.png",
+  "./mole-new.png"
 ];
 
 self.addEventListener("install", (event) => {
