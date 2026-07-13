@@ -136,301 +136,90 @@
       margin-bottom: 16px;
     }
 
-    /* 洞：柔和卡通草地泥土 */
+    /* 洞：草地木框感，不挡角色脸 */
     .hole {
       position: relative;
       aspect-ratio: 1;
       background:
-        radial-gradient(ellipse 70% 38% at 50% 88%, #3d2814 0%, #2c1a0c 50%, transparent 72%),
-        linear-gradient(180deg, #7dba5a 0%, #5a9a3e 42%, #8b6914 72%, #6b4a1e 100%);
+        radial-gradient(ellipse 68% 36% at 50% 90%, #3d2814 0%, #2c1a0c 48%, transparent 70%),
+        linear-gradient(180deg, #8fd06a 0%, #5fa83e 40%, #8b6914 72%, #6b4a1e 100%);
       border-radius: 50%;
       overflow: hidden;
       border: 5px solid #c4a574;
       box-shadow:
-        inset 0 10px 18px rgba(255, 255, 255, 0.15),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.25),
+        inset 0 10px 18px rgba(255, 255, 255, 0.18),
+        inset 0 -12px 20px rgba(0, 0, 0, 0.22),
         0 5px 0 #8a6a3a;
       cursor: pointer;
     }
 
-    /* 洞底阴影：必须在地鼠下面，不能挡脸 */
     .hole::before {
       content: "";
       position: absolute;
       left: 18%;
       right: 18%;
-      bottom: 4%;
-      height: 16%;
+      bottom: 2%;
+      height: 14%;
       border-radius: 50%;
-      background: radial-gradient(ellipse at center, #1a1008 0%, #2c1a0c 55%, transparent 78%);
+      background: radial-gradient(ellipse at center, #1a1008 0%, transparent 78%);
       z-index: 1;
       pointer-events: none;
     }
 
-    /* 洞口下沿薄阴影：只压住身体底部，不盖脸 */
     .hole::after {
       content: "";
       position: absolute;
-      left: 12%;
-      right: 12%;
+      left: 10%;
+      right: 10%;
       bottom: 0;
-      height: 10%;
+      height: 9%;
       border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 0%, rgba(40, 24, 10, 0.35) 0%, transparent 75%);
+      background: radial-gradient(ellipse at 50% 0%, rgba(40, 24, 10, 0.28) 0%, transparent 75%);
       z-index: 3;
       pointer-events: none;
     }
 
-    /* 动森风卡通地鼠：整体上移，保证脸在洞口上方可见 */
+    /* 自定义图片地鼠 */
     .mole {
       position: absolute;
       left: 50%;
-      bottom: 10%;
-      width: 76%;
-      height: 92%;
-      transform: translateX(-50%) translateY(125%);
+      bottom: 4%;
+      width: 92%;
+      height: 96%;
+      transform: translateX(-50%) translateY(118%);
       transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
       z-index: 5;
       transform-origin: 50% 100%;
+      pointer-events: auto;
     }
 
     .mole.up {
-      /* 负值 = 再往上冒一截，露出整张脸 */
-      transform: translateX(-50%) translateY(-18%);
-      animation: ac-bounce 1.1s ease-in-out infinite;
+      transform: translateX(-50%) translateY(-6%);
+      animation: mole-bob 1.05s ease-in-out infinite;
     }
 
     .mole.hit {
       animation: none;
-      transform: translateX(-50%) translateY(-8%) scale(1.06, 0.84);
-      filter: brightness(1.12);
-      transition: transform 0.1s ease-out;
+      transform: translateX(-50%) translateY(2%) scale(1.05, 0.86);
+      filter: brightness(1.15) saturate(1.1);
+      transition: transform 0.1s ease-out, filter 0.1s ease;
     }
 
-    @keyframes ac-bounce {
-      0%, 100% { transform: translateX(-50%) translateY(-18%); }
-      50% { transform: translateX(-50%) translateY(-24%); }
+    @keyframes mole-bob {
+      0%, 100% { transform: translateX(-50%) translateY(-6%); }
+      50% { transform: translateX(-50%) translateY(-12%); }
     }
 
-    .villager {
-      position: absolute;
-      inset: 0;
-    }
-
-    /* 圆耳朵 */
-    .v-ear {
-      position: absolute;
-      top: 8%;
-      width: 28%;
-      height: 26%;
-      background: #e8c89a;
-      border: 3px solid #5c4030;
-      border-radius: 50% 50% 46% 46%;
-      z-index: 1;
-      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.06);
-    }
-
-    .v-ear.left {
-      left: 2%;
-      transform: rotate(-18deg);
-    }
-
-    .v-ear.right {
-      right: 2%;
-      transform: rotate(18deg);
-    }
-
-    .v-ear::after {
-      content: "";
-      position: absolute;
-      left: 22%;
-      top: 28%;
-      width: 52%;
-      height: 48%;
-      border-radius: 50%;
-      background: #f5d9b8;
-    }
-
-    /* 胖乎乎的圆身体 */
-    .v-body {
-      position: absolute;
-      left: 10%;
-      right: 10%;
-      top: 22%;
-      bottom: 4%;
-      background: radial-gradient(ellipse at 50% 30%, #f3d7a8 0%, #e4b87a 45%, #d4a060 100%);
-      border: 3.5px solid #5c4030;
-      border-radius: 48% 48% 46% 46% / 52% 52% 46% 46%;
-      box-shadow:
-        inset 0 -10px 0 rgba(0, 0, 0, 0.05),
-        inset 0 8px 12px rgba(255, 255, 255, 0.35),
-        0 6px 10px rgba(0, 0, 0, 0.18);
-      z-index: 2;
-    }
-
-    /* 肚皮浅色 */
-    .v-belly {
-      position: absolute;
-      left: 22%;
-      right: 22%;
-      top: 48%;
-      bottom: 14%;
-      background: #fff6e8;
-      border-radius: 50%;
-      border: 2.5px solid #5c4030;
-      opacity: 0.95;
-      z-index: 3;
-    }
-
-    /* 小手 */
-    .v-paw {
-      position: absolute;
-      top: 58%;
-      width: 22%;
-      height: 18%;
-      background: #e8c89a;
-      border: 3px solid #5c4030;
-      border-radius: 50%;
-      z-index: 4;
-      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.06);
-    }
-
-    .v-paw.left {
-      left: -2%;
-      transform: rotate(-25deg);
-    }
-
-    .v-paw.right {
-      right: -2%;
-      transform: rotate(25deg);
-    }
-
-    /* 脸 */
-    .v-face {
-      position: absolute;
-      left: 12%;
-      right: 12%;
-      top: 26%;
-      height: 42%;
-      z-index: 5;
-    }
-
-    /* 动森标志性大眼睛 */
-    .v-eye {
-      position: absolute;
-      top: 18%;
-      width: 26%;
-      height: 42%;
-      background: #2b2118;
-      border-radius: 50%;
-      border: 2.5px solid #5c4030;
-      overflow: hidden;
-    }
-
-    .v-eye.left { left: 12%; }
-    .v-eye.right { right: 12%; }
-
-    .v-eye::before {
-      content: "";
-      position: absolute;
-      top: 14%;
-      left: 18%;
-      width: 42%;
-      height: 38%;
-      background: #fff;
-      border-radius: 50%;
-    }
-
-    .v-eye::after {
-      content: "";
-      position: absolute;
-      bottom: 18%;
-      right: 16%;
-      width: 18%;
-      height: 16%;
-      background: rgba(255, 255, 255, 0.55);
-      border-radius: 50%;
-    }
-
-    /* 腮红 */
-    .v-blush {
-      position: absolute;
-      top: 52%;
-      width: 16%;
-      height: 12%;
-      background: #ffb4b4;
-      border-radius: 50%;
-      opacity: 0.85;
-    }
-
-    .v-blush.left { left: 6%; }
-    .v-blush.right { right: 6%; }
-
-    /* 小鼻子 */
-    .v-nose {
-      position: absolute;
-      left: 50%;
-      top: 52%;
-      width: 14%;
-      height: 12%;
-      transform: translateX(-50%);
-      background: #5c4030;
-      border-radius: 50%;
-    }
-
-    /* 微笑 */
-    .v-mouth {
-      position: absolute;
-      left: 50%;
-      top: 66%;
-      width: 22%;
-      height: 14%;
-      transform: translateX(-50%);
-      border: 3px solid #5c4030;
-      border-top: none;
-      border-radius: 0 0 20px 20px;
-      background: transparent;
-    }
-
-    /* 呆毛 / 小撮毛 */
-    .v-tuft {
-      position: absolute;
-      left: 50%;
-      top: 10%;
-      width: 14%;
-      height: 16%;
-      transform: translateX(-50%);
-      background: #e8c89a;
-      border: 3px solid #5c4030;
-      border-radius: 50% 50% 40% 40%;
-      z-index: 6;
-      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.05);
-    }
-
-    .v-tuft::before {
-      content: "";
-      position: absolute;
-      left: -70%;
-      top: 20%;
-      width: 90%;
-      height: 80%;
-      background: #e8c89a;
-      border: 3px solid #5c4030;
-      border-radius: 50%;
-      z-index: -1;
-    }
-
-    .v-tuft::after {
-      content: "";
-      position: absolute;
-      right: -70%;
-      top: 20%;
-      width: 90%;
-      height: 80%;
-      background: #e8c89a;
-      border: 3px solid #5c4030;
-      border-radius: 50%;
-      z-index: -1;
+    .mole-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+      pointer-events: none;
     }
 
     .controls {
@@ -720,7 +509,7 @@
 <body>
   <div class="game">
     <h1>🐹 打地鼠</h1>
-    <p class="subtitle">软萌卡通村民地鼠 · 点中得分 · 30 秒冲高分</p>
+    <p class="subtitle">点中冒出来的可爱地鼠得分 · 30 秒冲高分</p>
 
     <div class="hud">
       <div class="stat">
@@ -864,26 +653,9 @@
           const mole = document.createElement("div");
           mole.className = "mole";
           mole.setAttribute("role", "button");
-          mole.setAttribute("aria-label", "卡通地鼠");
+          mole.setAttribute("aria-label", "地鼠");
           mole.innerHTML =
-            '<div class="villager">' +
-            '  <div class="v-ear left"></div>' +
-            '  <div class="v-ear right"></div>' +
-            '  <div class="v-tuft"></div>' +
-            '  <div class="v-body">' +
-            '    <div class="v-belly"></div>' +
-            '    <div class="v-face">' +
-            '      <div class="v-eye left"></div>' +
-            '      <div class="v-eye right"></div>' +
-            '      <div class="v-blush left"></div>' +
-            '      <div class="v-blush right"></div>' +
-            '      <div class="v-nose"></div>' +
-            '      <div class="v-mouth"></div>' +
-            "    </div>" +
-            "  </div>" +
-            '  <div class="v-paw left"></div>' +
-            '  <div class="v-paw right"></div>' +
-            "</div>";
+            '<img class="mole-img" src="mole.png" alt="地鼠" draggable="false" />';
 
           const fx = document.createElement("div");
           fx.className = "hit-fx";

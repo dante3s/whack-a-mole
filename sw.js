@@ -1,11 +1,12 @@
 /* 简易离线缓存：添加到主屏幕后，无网也能打开玩 */
-const CACHE = "whack-a-mole-v6-face-fix";
+const CACHE = "whack-a-mole-v7-custom-mole";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-180.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./mole.png"
 ];
 
 self.addEventListener("install", (event) => {
